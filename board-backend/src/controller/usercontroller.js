@@ -1,23 +1,32 @@
 // Example userController.js
 require("dotenv").config();
-const User = require('../models/usermodel.js');
+const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
+const con = require("../config/connect.js")
+const { DataTypes  } = require('sequelize');
 const generateToken = (user) => {
     return jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY);
   };
   
-  const register = async (req, res) => {
+  const register = async (name,email,password) => {
     try {
+        const User = require('../models/usermodel.js')(con, DataTypes)
       // Check if the user already exists with the provided email
-      let user = await User.findOne({ email: req.body.email }).lean().exec();
+      let user = await User.findOne({ where: { email:email } });
   
       if (user) {
-        return res.status(400).send({ message: "Please try another email" });
+        return { message: "Please try  email" }
       }
   
+      const hashedPassword = await bcrypt.hash(password, 10);
       // Create a new user with the provided email and password
-      user = await User.create(req.body);
-  
+      const body = {
+        name:name,
+        email:email,
+        password:hashedPassword
+      }
+      user = await User.create(body);
+  console.log(user)
       // Generate a token for the user
       const token = generateToken(user);
   
@@ -26,35 +35,41 @@ const generateToken = (user) => {
       await user.save();
   
       // Return the user and the token
-      res.send({ user, token });
+     
+      return { user, token };
     } catch (err) {
-      res.status(500).send(err.message);
+        console.log(err)
+     return {message:"Error Doing Registration"}
     }
   };
   
-  const login = async (req, res) => {
+  const login = async (email, password) => {
     try {
       // Find the user with the provided email
-      const user = await User.findOne({ email: req.body.email });
+      const User = require('../models/usermodel.js')(con, DataTypes)
+      const user = await User.findOne({ where: {  email:email } });
   
       if (!user) {
-        return res.status(400).send({ message: "Please try another email or password" });
+        console.log(user)
+        return { message: "Please try another email or password" }
       }
   
       // Check if the provided password matches the user's password
-      const match = await user.checkPassword(req.body.password);
+      const match = await user.checkPassword(password);
   
       if (!match) {
-        return res.status(400).send({ message: "Please try another email or password" });
+        console.log(match)
+        return { message: "Please try another email or password" }
       }
   
       // Generate a token for the user
       const token = generateToken(user);
   
       // Return the user and the token
-      res.send({ user, token });
+      return { user, token }
     } catch (err) {
-      res.status(500).send(err.message);
+        console.log(err)
+      return false
     }
   };
   

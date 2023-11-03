@@ -4,12 +4,13 @@ const router = express.Router();
 const taskController = require('../controller/taskcontroller.js');
 
 // POST /task - Create a new task
-router.post('/taskcreate', async (req, res) => {
+router.post('/createtask', async (req, res) => {
   const { title, description } = req.body;
   try {
     const task = await taskController.createTask(title, description);
     res.json(task);
   } catch (error) {
+    console.log(error)
     res.status(400).json({ message: 'Task creation failed', error: error.message });
   }
 });

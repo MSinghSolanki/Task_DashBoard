@@ -1,17 +1,17 @@
 module.exports = (sequelize, DataTypes) => {
-  const task_list = sequelize.define("task_list", {
-    listing_id: {
+  const mapping_list = sequelize.define("mapping_list", {
+    mapping_id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    user_id: {
+    listing_id: {
       type: DataTypes.INTEGER,
     },
-    is_deleted: {
+    task_id: {
       type: DataTypes.INTEGER,
-    }
+    },
   });
 
-  return task_list;
+  return swaping_list;
 };
