@@ -10,7 +10,7 @@ import axios from 'axios';
   
     useEffect(() => {
       // Fetch tasks for the specific list using a GET request
-      axios.get(`http://localhost:3001/tasks?listId=${listId}`)
+      axios.get(`http://localhost:3002/api/task/listing`)
         .then((response) => {
           setListTasks(response.data);
         })

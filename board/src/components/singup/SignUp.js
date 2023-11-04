@@ -7,6 +7,9 @@ import { useNavigate } from 'react-router-dom';
 
 
 const SignupForm = () => {
+
+  const BASE_URL = process.env.REACT_APP_BASE_URL||"";
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -32,13 +35,13 @@ const navigateToHome = ()=>{
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3001/user/register', {
+      const response = await axios.post("http://localhost:3002/api/user/sign-up", {
         name,
         email,
         password,
       });
       console.log(name,email,password)
-      const { user, token } = response.data;
+      const { user_data, token } = response.data.data;
       // Get existing tokens from local storage or create an empty array if none exist
       const existingTokens = JSON.parse(localStorage.getItem('tokens')) || [];
       // Add the new token to the array
@@ -60,7 +63,7 @@ const navigateToHome = ()=>{
       setEmail('');
       setPassword('');
       // Do something with the user data if needed
-      console.log('Registered user:', user);
+      console.log('Registered user:', user_data);
       navigateToHome();
     } catch (error) {
       // Show error message

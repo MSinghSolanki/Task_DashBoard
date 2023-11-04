@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import "./task.css"
 
-const Task = ({ task, onTaskComplete, onTaskDescriptionChange }) => {
+const Task = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedDescription, setEditedDescription] = useState(task.description);
 
@@ -17,20 +17,18 @@ const Task = ({ task, onTaskComplete, onTaskDescriptionChange }) => {
   };
 
   const handleCreateTask = () => {
-    const title = task.title;
-    const description = editedDescription;
+    const title = title;
+    const description = description;
 
-    // Send a POST request to your API to create a new task
-    axios.post('http://localhost:3001/task/createtask', {
+ 
+    axios.post('http://localhost:3002/api/task/create', {
       title,
       description,
     })
       .then((response) => {
-        // Handle success, e.g., update the UI or display a success message
         console.log('Task created successfully:', response.data);
       })
       .catch((error) => {
-        // Handle errors, e.g., show an error message to the user
         console.error('Error creating task:', error);
       });
   };

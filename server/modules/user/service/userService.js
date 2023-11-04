@@ -85,7 +85,7 @@ async function validateStudentController(req, res) {
 
         const user = require("../../../models/usermodel")(master_data_base, DataTypes);
 
-        const find_one_user = await user.findOne({ email: email?.trim(), password: password?.trim() });
+        const find_one_user = await user.findOne({ where: { email: email?.trim(), password: password?.trim() } });
 
         if (!find_one_user) {
             return mainResponse(res, "failed", "No record found.", []);
