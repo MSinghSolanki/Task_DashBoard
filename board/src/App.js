@@ -1,17 +1,22 @@
 
 import './App.css';
-import { List } from './components/Lists/List';
-import Navbar from './components/Navbar/Navbar';
+import {Navbar} from './components/Navbar/Navbar';
+import { BrowserRouter, Route, Routes, Link } from 'react-router-dom';
+import SignupForm from './components/singup/SignUp';
+import { LoginForm } from './components/Login/Login';
+import { Homepage } from './components/home/home';
+
 
 function App() {
   return (
-    <div>
-      <Navbar/>
-      <div>
-      <List/>
-      </div>
-     
-    </div>
+    <BrowserRouter>
+      <Navbar />
+      <Routes>
+        <Route path='/' element={<Homepage/>}/>
+        <Route path="/signup" element={<SignupForm />} />
+        <Route path="/login" element={<LoginForm />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
