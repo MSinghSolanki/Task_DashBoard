@@ -18,7 +18,7 @@ const TaskBoard = () => {
   const [values, setValues] = useState(data);
   const [listCreated, setListCreated] = useState(false)
   const [lastListingId, setLastListingId] = useState(0);
-  const [selectedList, setSelectedList] = useState(null);
+  const [taskValues, setTaskValues] = useState([]);
 
   const toggleNewListInput = () => {
     setShowNewListInput(!showNewListInput);
@@ -38,51 +38,76 @@ const TaskBoard = () => {
     setShowNewListInput(false);
   };
 
-  const handleCreateTask = async (listId) => {
-    const listIndex = lists.findIndex((list) => list.listing_id === listId);
+  const setTaskValuesForList = (listIndex, newValues) => {
+    const updatedValues = [...taskValues];
+    updatedValues[listIndex] = newValues;
+    setTaskValues(updatedValues);
+  };
+    // Input Handling for a specific list
+    const handleInputForList = (e, listIndex) => {
+      const { name, value } = e.target;
+      const newValues = { ...taskValues[listIndex], [name]: value };
+      setTaskValuesForList(listIndex, newValues);
+    };
 
-    if (listIndex >= 0) {
-      const newTask = { task_title: values.task_title, task_description: values.task_description };
-
-      if (listCreated && lists[listIndex].tasks.length === 0) {
-        const dataToSend = {
-          list_title: lists[listIndex].list_title,
-          task_title: newTask.task_title,
-          task_description: newTask.task_description,
+    const handleCreateTask = async (listIndex) => {
+      if (listIndex >= 0) {
+        const newTask = {
+          task_title: taskValues[listIndex]?.task_title,
+          task_description: taskValues[listIndex]?.task_description,
         };
-
-        try {
-          await sendTaskData(dataToSend);
-          await handleGetData();
-        } catch (error) {
-          console.error('Error sending data to API:', error);
+    
+        let dataToSend = {};
+        const userToken = localStorage.getItem('tokens');
+        const config = {
+          headers: { Authorization: `Bearer ${userToken}` },
+        };
+    
+        // Fetch the listing_id from the API
+        const response = await axios.get('http://localhost:3002/api/task/listing', config);
+        const listingId = response.data.data[0].listing_id; // Assuming it's the same for all items
+    
+        if (listCreated && lists[listIndex].tasks.length === 0) {
+          dataToSend = {
+            list_title: lists[listIndex].list_title,
+            task_title: newTask.task_title,
+            task_description: newTask.task_description,
+          };
+        } else if (lists[listIndex].listing_id === listingId) { // Compare the listing_id
+          dataToSend = {
+            task_title: newTask.task_title,
+            task_description: newTask.task_description,
+          };
         }
-      } else {
-        const dataToSend = {
-          task_title: newTask.task_title,
-          task_description: newTask.task_description,
-          listing_id: listId,
-        };
-
+    
         try {
           await sendTaskData(dataToSend);
           await handleGetData();
+    
+          const newTaskValues = {
+            ...taskValues[listIndex],
+            task_title: '',
+            task_description: '',
+          };
+          setTaskValuesForList(listIndex, newTaskValues);
+    
+          const updatedLists = [...lists];
+          updatedLists[listIndex].tasks.push(newTask);
+          setLists(updatedLists);
         } catch (error) {
           console.error('Error sending data to API:', error);
         }
       }
-
-  
-      setValues({ task_title: '', task_description: '' });
-    }
-  };
-
+    };
+    
+    
+    
   const sendTaskData = (data) => {
     const userToken = localStorage.getItem('tokens');
     const config = {
       headers: { Authorization: `Bearer ${userToken}` },
     };
-    console.log(data)
+    
     axios.post('http://localhost:3002/api/task/create', data, config)
    
       .then((response) => {
@@ -159,36 +184,37 @@ const TaskBoard = () => {
         )}
       </div>
       <div className="lists-container">
-        {lists.map((list, listIndex) => (
-          <div key={listIndex} className="list">
-            <h3>{list.list_title}</h3>
-            <ul>
-              {list.tasks.map((task, taskIndex) => (
-                <li key={taskIndex}>
-                  <div>{task.task_title}</div>
-                  <div>{task.task_description}</div>
-                </li>
-              ))}
-            </ul>
-            <div className="task-creation">
-              <input
-                name="task_title"
-                type="text"
-                placeholder="New Task Title"
-                value={values.task_title}
-                onChange={handleInput}
-              />
-              <input
-                name="task_description"
-                type="text"
-                placeholder="Task Description"
-                value={values.task_description}
-                onChange={handleInput}
-              />
-              <button onClick={() => handleCreateTask(listIndex)}>Add Task</button>
-            </div>
-          </div>
+      {lists.map((list, listIndex) => (
+    <div key={listIndex} className="list">
+      <h3>{list.list_title}</h3>
+      <ul>
+        {list.tasks.map((task, taskIndex) => (
+          <li key={taskIndex}>
+            <div>{task.task_title}</div>
+            <div>{task.task_description}</div>
+          </li>
         ))}
+      </ul>
+      <div className="task-creation">
+        <input
+          name="task_title"
+          type="text"
+          placeholder="New Task Title"
+          value={taskValues[listIndex]?.task_title || ''}
+          onChange={(e) => handleInputForList(e, listIndex)}
+        />
+        <input
+          name="task_description"
+          type="text"
+          placeholder="Task Description"
+          value={taskValues[listIndex]?.task_description || ''}
+          onChange={(e) => handleInputForList(e, listIndex)}
+        />
+        <button onClick={() => handleCreateTask(listIndex)}>Add Task</button>
+      </div>
+    </div>
+  ))}
+
       </div>
     </div>
   );

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './SignUp.css';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
+import {Routes, Route,Link} from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 
@@ -42,7 +43,7 @@ const navigateToHome = ()=>{
       });
       console.log(name,email,password)
       const { user_data, token } = response.data.data;
-      // Get existing tokens from local storage or create an empty array if none exist
+
       const existingTokens = JSON.parse(localStorage.getItem('tokens')) || [];
       // Add the new token to the array
       existingTokens.push(token);
@@ -115,7 +116,7 @@ const navigateToHome = ()=>{
             required
           />
         </div>
-        <button type="submit">Sign Up</button>
+        <Link to="/login"><button>SignUp</button></Link>
       </form>
     </div>
   );
