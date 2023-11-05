@@ -65,7 +65,7 @@ async function taskCreationController(req, res) {
     try {
 
         const { id = 0, email = "" } = req.user;
-        let { title = "", description = "", list_id = 0, list_title = "" } = req.body;
+        let { task_title = "", task_description = "", list_id = 0, list_title = "" } = req.body;
         console.log("list_id : ", list_id);
 
         if (list_id) {
@@ -91,8 +91,8 @@ async function taskCreationController(req, res) {
 
         const task_model = require("../../../models/taskmodel")(master_data_base, DataTypes);
         const task_obj = {
-            title: title,
-            description: description,
+            title: task_title,
+            description: task_description,
             is_completed: 0,
             id_deleted: 0
         }

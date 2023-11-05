@@ -42,26 +42,34 @@ const navigateHome = () => {
         }
       );
   
-      const { user_data, token } = response.data.data;
+      let {status ='failed' } = response.data;
+  const {user_data = {}, token = "",} =response.data.data
+
+      if (status === "success") {
+        console.log("Logged in user", user_data);
+       
+        navigateHome();
+      } else {
+        toast.error('Incorrect Email or Password User', {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        console.log(1);
+      }
+      
+      console.log(response.data)
      
       // Store the token in local storage
+      localStorage.setItem('userName', user_data.name);
       localStorage.setItem('tokens', token);
 
-      // Show success message
-      console.log('Logged in user:', user_data);
-      navigateHome();
-    } catch (error) {
-      // Show error message
-      toast.error('Incorrect Email or Password User', {
-        position: 'top-right',
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
-      console.error('Login error:', error);
+    } catch(err){
+      console.log({message:err})
     }
   };
   
@@ -77,7 +85,7 @@ const navigateHome = () => {
           type="email"
           id="email"
           value={email}
-          onChange={e=>setValues}
+          onChange={handleEmailChange}
           required
         />
       </div>

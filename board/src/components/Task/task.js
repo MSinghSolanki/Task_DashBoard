@@ -3,28 +3,20 @@ import axios from 'axios';
 import "./task.css"
 
 const Task = () => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedDescription, setEditedDescription] = useState(task.description);
-
-  const handleTaskComplete = () => {
-    onTaskComplete();
-  };
-
-  const handleDescriptionChange = (e) => {
-    const newDescription = e.target.value;
-    setEditedDescription(newDescription);
-    onTaskDescriptionChange(newDescription);
-  };
+  const [values, setValues] = useState({
+    title: "",
+    description: ""
+  });
 
   const handleCreateTask = () => {
-    const title = title;
-    const description = description;
 
- 
-    axios.post('http://localhost:3002/api/task/create', {
-      title,
-      description,
-    })
+  const userToken = localStorage.getItem('tokens')
+
+    // const config = {
+    //   headers: {Authorization: `Bearer ${userToken}`,},
+    // };
+
+    axios.post('http://localhost:3002/api/task/create', values,{})
       .then((response) => {
         console.log('Task created successfully:', response.data);
       })
@@ -33,28 +25,27 @@ const Task = () => {
       });
   };
 
+  const handleCheckboxChange = (e) => {
+   
+  };
+
   return (
     <div className="task">
-      <input type="checkbox" onChange={handleTaskComplete} />
-      <span>{task.title}</span>
-      <div>
-      {!isEditing && (
-        <button onClick={() => setIsEditing(true)}>Add Description</button>
-      )}
-      {isEditing && (
-        <div>
-          <textarea
-            value={editedDescription}
-            onChange={handleDescriptionChange}
-            placeholder="Task Description"
-          />
-          <button onClick={() => {
-            handleCreateTask();
-            setIsEditing(false); // Exit editing mode
-          }}>Save Description</button>
-        </div>
-      )}
-      </div>
+      <input type="checkbox" onChange={handleCheckboxChange} />
+      <span>{values.title}</span>
+      <input
+        type="text"
+        placeholder="Title"
+        value={values.title}
+        onChange={(e) => setValues({ ...values, title: e.target.value })}
+      />
+      <input
+        type="text"
+        placeholder="Description"
+        value={values.description}
+        onChange={(e) => setValues({ ...values, description: e.target.value })}
+      />
+      <button onClick={handleCreateTask}>Create Task</button>
     </div>
   );
 };

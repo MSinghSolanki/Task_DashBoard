@@ -7,8 +7,8 @@ const { body } = require("express-validator");
 const { taskCreationMiddleWare, taskCreationController, taskListController, moveTaskMiddleware, moveTaskController, taskStausUpdateMiddleware, taskStausUpdateController } = require("../service/taskService");
 
 const create_task = [
-    body("title").trim().isLength({ min: 5 }).withMessage("Invalid title length.").bail().isAlphanumeric('en-US', { ignore: ' ' }).withMessage("Invalid title format."),
-    body("description").trim().isLength({ min: 10 }).withMessage("Invalid description length."),
+    body("task_title").trim().isLength({ min: 5 }).withMessage("Invalid title length.").bail().isAlphanumeric('en-US', { ignore: ' ' }).withMessage("Invalid title format."),
+    body("task_description").trim().isLength({ min: 10 }).withMessage("Invalid description length."),
     taskCreationMiddleWare,
     taskCreationController
 ];
