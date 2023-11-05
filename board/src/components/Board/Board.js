@@ -36,43 +36,48 @@ const TaskBoard = () => {
     setListTitle('');
     setShowNewListInput(false);
   };
-
-  const handleCreateTask = (listId) => {
+  const handleCreateTask = async (listId) => {
     const listIndex = lists.findIndex((list) => list.listing_id === listId);
+  
     if (listIndex >= 0) {
       const newTask = { task_title: values.task_title, task_description: values.task_description };
-
-   
+  
       if (listCreated && lists[listIndex].tasks.length === 0) {
         const dataToSend = {
           list_title: lists[listIndex].list_title,
           task_title: newTask.task_title,
           task_description: newTask.task_description,
         };
-     
-        sendTaskData(dataToSend);
-        handleGetData();
+  
+        try {
+          await sendTaskData(dataToSend);
+          await handleGetData();
+        } catch (error) {
+          console.error('Error sending data to API:', error);
+        }
+      } else {
+        const dataToSend = {
+          task_title: newTask.task_title,
+          task_description: newTask.task_description,
+          listing_id: listId,
+        };
+  
+        try {
+          await sendTaskData(dataToSend);
+          await handleGetData();
+        } catch (error) {
+          console.error('Error sending data to API:', error);
+        }
       }
-else{
-  const dataToSend = {
-    task_title: newTask.task_title,
-    task_description: newTask.task_description,
-    listing_id: listId,
-
-  };
-  sendTaskData(dataToSend);
-  handleGetData();
-
-
-}
+  
       lists[listIndex].tasks.push(newTask);
       setLists([...lists]);
       localStorage.setItem('lists', JSON.stringify([...lists]));
-   
     }
+  
     setValues({ task_title: '', task_description: '' });
-   
   };
+  
 
   const sendTaskData = (data) => {
     const userToken = localStorage.getItem('tokens');
@@ -97,31 +102,29 @@ else{
     const config = {
       headers: { Authorization: `Bearer ${userToken}` },
     };
-
-    axios
-      .get('http://localhost:3002/api/task/listing', config)
-      .then((response) => {
-        console.log("response",response)
-        if (response.status === "success" && Array.isArray(response.data)) {
-          const organizedList = response.data.map((item) => ({
-            listing_id: item.listing_id,
-            list_title: item.list_title,
-            tasks: item.tasks.map((task) => ({
-              task_title: task.task_title,
-              task_description: task.task_description,
-            })),
-          }));
-          setLists(organizedList);
-        } else {
-          console.error('Data structure is not as expected.');
-        }
-      })
-    };
+  
+    try {
+      const response = await axios.get('http://localhost:3002/api/task/listing', config);
+  
+      console.log(response.status)
+      if (response.status==200) {
+       setLists(data)
+   
+      } else {
+        console.error('Data structure is not as expected.');
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+   
+    console.log(lists)
+  };
+  
 
 
   useEffect(() => {
     handleGetData();
-  }, [lists]);
+  }, []);
 
   const handleInput = (e) => {
     const { name, value } = e.target;
