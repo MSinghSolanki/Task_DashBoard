@@ -18,8 +18,8 @@ const SignupForm = () => {
   
 const navigate = useNavigate();
 
-const navigateToHome = ()=>{
-  navigate("/")
+const navigateToLogin = ()=>{
+  navigate("/login")
 }
   const handleNameChange = (e) => {
     setName(e.target.value);
@@ -65,7 +65,7 @@ const navigateToHome = ()=>{
       setPassword('');
       // Do something with the user data if needed
       console.log('Registered user:', user_data);
-      navigateToHome();
+      navigateToLogin();
     } catch (error) {
       // Show error message
       toast.error('Email Already in use', {
@@ -116,7 +116,7 @@ const navigateToHome = ()=>{
             required
           />
         </div>
-        <Link to="/login"><button>SignUp</button></Link>
+       <button type='submit'>SignUp</button>
       </form>
     </div>
   );
