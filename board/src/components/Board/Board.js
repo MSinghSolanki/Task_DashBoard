@@ -65,18 +65,25 @@ const TaskBoard = () => {
     
         // Fetch the listing_id from the API
         const response = await axios.get('http://localhost:3002/api/task/listing', config);
-        const listingId = response.data.data[0].listing_id; // Assuming it's the same for all items
+        const listingId = response?.data.data[0]?.listing_id
+     
     
-        if (listCreated && lists[listIndex].tasks.length === 0) {
+         // Assuming it's the same for all items
+        if (listCreated && lists[listIndex].tasks.length == 0 || listingId==undefined) {
           dataToSend = {
-            list_title: lists[listIndex].list_title,
-            task_title: newTask.task_title,
-            task_description: newTask.task_description,
+            listing_id:"",
+            list_title:lists[listIndex].list_title,
+            task_title:newTask.task_title,
+            task_description:newTask.task_description,
           };
-        } else if (lists[listIndex].listing_id === listingId) { // Compare the listing_id
+        } else if (lists[listIndex].listing_id == listingId) { 
+      ;
+          console.log("length 1 data :",response.data.data[0].listing_id)
           dataToSend = {
-            task_title: newTask.task_title,
-            task_description: newTask.task_description,
+            task_title:newTask.task_title,
+            task_description:newTask.task_description,
+            listing_id:listingId,
+            list_title:""
           };
         }
     
@@ -103,6 +110,7 @@ const TaskBoard = () => {
     
     
   const sendTaskData = (data) => {
+    console.log("data",data)
     const userToken = localStorage.getItem('tokens');
     const config = {
       headers: { Authorization: `Bearer ${userToken}` },

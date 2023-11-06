@@ -65,19 +65,20 @@ async function taskCreationController(req, res) {
     try {
 
         const { id = 0, email = "" } = req.user;
-        let { task_title = "", task_description = "", list_id = 0, list_title = "" } = req.body;
-        console.log("list_id : ", list_id);
-
-        if (list_id) {
+        let { task_title = "", task_description = "", listing_id = 0, list_title = "" } = req.body;
+        console.log("list_id : ", listing_id);
+        console.log("This is data", req.body, req.user)
+        if (listing_id) {
             const taskList = require("../../../models/listmodel")(master_data_base, DataTypes);
-            const findTaskList = await taskList.findAll({ where: { listing_id: list_id, user_id: id } });
+            const findTaskList = await taskList.findAll({ where: { listing_id: listing_id, user_id: id } });
 
             if (findTaskList?.length > 1 || !findTaskList?.length) {
                 return mainResponse(res, "failed", "Invalid list id provided or inaccurate listing.", []);
             }
         }
 
-        if (!list_id) {
+        if (!listing_id) {
+            console.log("listing Id : ", req.body);
             const taskList = require("../../../models/listmodel")(master_data_base, DataTypes);
             const listing_obj = {
                 user_id: id,
@@ -85,8 +86,7 @@ async function taskCreationController(req, res) {
                 list_title: list_title
             }
             const create_listing = await taskList.create(listing_obj);
-            console.log("create_listing : ", create_listing);
-            list_id = create_listing?.listing_id;
+            listing_id = create_listing?.listing_id;
         }
 
         const task_model = require("../../../models/taskmodel")(master_data_base, DataTypes);
@@ -101,9 +101,10 @@ async function taskCreationController(req, res) {
 
         const mapping_model = require("../../../models/mappin_list")(master_data_base, DataTypes);
         const mapping_obj = {
-            listing_id: list_id,
+            listing_id: listing_id,
             task_id: task_creation.task_id
         }
+
         const mapping_creation = await mapping_model.create(mapping_obj);
 
         return mainResponse(res, 'success', "Task created successfully.", []);
