@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import './Board.css';
-import { toast } from 'react-toastify';
 
 const TaskBoard = () => {
   const BSE_URL = process.env.REACT_APP_BASE_URL;
@@ -71,7 +69,7 @@ const TaskBoard = () => {
         console.log('Data sent to API:', response);
         setValues(data)
         handleGetData();
-        setClearStatus(true)
+      
       })
       .catch((error) => {
         console.error('Error sending data to API:', error);
@@ -122,7 +120,10 @@ const TaskBoard = () => {
             <h3>{item?.list_title}</h3>
             <ul>
               {item?.tasks.map((taskData, taskIndex) => (
+             
                 <li key={taskIndex}>
+                  {console.log(taskIndex)}
+                  <div> <input type='checkbox'/></div>  
                   <div>{taskData?.task_title}</div>
                   <div>{taskData?.task_description}</div>
                 </li>
