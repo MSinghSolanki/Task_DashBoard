@@ -182,7 +182,7 @@ async function taskStausUpdateController(req, res) {
             is_completed: 0
         }
 
-        if (task_status) {
+        if (+task_status?.trim()) {
             update_obj = { is_completed: 1 }
         }
         const update_mapping = await task_models.update(update_obj, { where: { task_id: task_id } })

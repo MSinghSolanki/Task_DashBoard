@@ -90,6 +90,29 @@ const TaskBoard = () => {
       })
   }
 
+  const onCheckChange=(task_id,task_status)=>{
+    const userToken = localStorage.getItem('tokens');
+    const config = { headers: { Authorization: `Bearer ${userToken}` }, }
+
+    let sendTaskData={
+      task_id:task_id,
+      task_status:task_status
+    }
+  
+    
+
+    axios.post(BSE_URL + '/api/task/status-change', sendTaskData, config)
+      .then((response) => {
+        console.log('Data sent to API:', response);
+        setValues(data)
+        handleGetData();
+      
+      })
+      .catch((error) => {
+        console.error('Error sending data to API:', error);
+      });
+  }
+
   useEffect(() => {
     handleGetData();
   }, []);
@@ -123,7 +146,7 @@ const TaskBoard = () => {
              
                 <li key={taskIndex}>
                   {console.log(taskIndex)}
-                  <div> <input type='checkbox'/></div>  
+                  <div><input type='checkbox' checked={taskData?.task_status} value={taskData?.task_status} onChange={()=>{onCheckChange(taskData?.task_id,taskData?.task_status?0:1)}}/></div>  
                   <div>{taskData?.task_title}</div>
                   <div>{taskData?.task_description}</div>
                 </li>
