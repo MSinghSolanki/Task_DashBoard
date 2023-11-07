@@ -142,16 +142,18 @@ const TaskBoard = () => {
           <div key={listIndex} className="list">
             <h3>{item?.list_title}</h3>
             <ul>
-              {item?.tasks.map((taskData, taskIndex) => (
-             
-                <li key={taskIndex}>
-                  {console.log(taskIndex)}
-                  <div><input type='checkbox' checked={taskData?.task_status} value={taskData?.task_status} onChange={()=>{onCheckChange(taskData?.task_id,taskData?.task_status?0:1)}}/></div>  
-                  <div>{taskData?.task_title}</div>
-                  <div>{taskData?.task_description}</div>
-                </li>
-              ))}
-            </ul>
+  {item?.tasks.map((taskData, taskIndex) => (
+    taskData?.task_status !== 1 ? (
+      <li key={taskIndex}>
+        <div>
+        <div><input type='checkbox' checked={taskData?.task_status} value={taskData?.task_status} onChange={()=>{onCheckChange(taskData?.task_id,taskData?.task_status?0:1)}}/></div>  
+        </div>
+        <div>{taskData?.task_title}</div>
+        <div>{taskData?.task_description}</div>
+      </li>
+    ) : null
+  ))}
+</ul>
 
             <div className="task-creation">
               <input
