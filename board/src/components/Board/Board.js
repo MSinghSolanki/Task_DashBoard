@@ -151,7 +151,7 @@ const TaskBoard = () => {
               {(provided) => (
                 <div ref={provided.innerRef}>
                   <div className="list">
-                    <h3>{item?.list_title}</h3>
+                    <h3>{item?.list_titlze}</h3>
                     <ul>
                       {item?.tasks.map((taskData, taskIndex) => (
                         taskData?.task_status !== 1 ? (
